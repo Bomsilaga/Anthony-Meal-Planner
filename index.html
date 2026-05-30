@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2E5C3C">
+<title>Anthony's Meal Planner</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#3F7A52;--gd:#2E5C3C;--gl:#E8F3EC;
+  --a:#E07848;--al:#FDF0E8;
+  --b:#4872B0;--bl:#EAF0FA;
+  --p:#7B5EA7;--pl:#F2EDF9;
+  --bg:#F6F3EE;--card:#fff;--border:#E3DCD4;
+  --text:#1E2025;--muted:#6B7280;
+  --danger:#C94040;--dangerl:#FEF0F0;
+  --nav:62px;--hdr:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+#hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr);background:var(--gd);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:100}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:38px;height:38px;background:rgba(255,255,255,.15);border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:20px}
+.hdr-title{font-weight:900;font-size:15px;letter-spacing:-.2px}
+.hdr-sub{font-size:9px;opacity:.65;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#sync-tag{background:rgba(255,255,255,.15);border-radius:9px;padding:4px 10px;
+  font-size:11px;font-weight:800;display:flex;align-items:center;gap:5px}
+#nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);background:#fff;
+  border-top:1px solid var(--border);display:flex;z-index:100;
+  padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  color:#9BA0AE;background:none;border:none;cursor:pointer;font-family:inherit;
+  border-top:3px solid transparent;padding:6px 4px 2px}
+.nb.on{color:var(--g);border-top-color:var(--g)}
+.nb .ni{font-size:20px}
+#content{padding-top:var(--hdr);padding-bottom:calc(var(--nav) + 8px);min-height:100vh}
+.pane{display:none}.pane.on{display:block}
+.card{background:#fff;border-radius:13px;border:1px solid var(--border);padding:13px 14px}
+.section-pad{padding:14px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border:none;
+  border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:active{filter:brightness(.88);transform:scale(.97)}
+.bg{background:var(--g);color:#fff}.ba{background:var(--a);color:#fff}
+.bb{background:var(--b);color:#fff}.bd{background:var(--gd);color:#fff}
+.bsm{padding:7px 12px;font-size:12px}
+.bdng{background:var(--dangerl);color:var(--danger)}
+.flabel{display:block;font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.finput{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;
+  font-size:16px;font-weight:600;font-family:inherit;background:#fff;outline:none;color:var(--text)}
+.finput:focus{border-color:var(--g)}
+textarea.finput{resize:vertical;min-height:90px}
+.ck{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;border-radius:11px;
+  border:1.5px solid var(--border);background:#fff;cursor:pointer;margin-bottom:6px;min-height:50px}
+.ck.ckg{background:var(--gl);border-color:rgba(63,122,82,.3)}
+.ck.ckb{background:var(--bl);border-color:rgba(72,114,176,.3)}
+.ck.ckp{background:var(--pl);border-color:rgba(123,94,167,.3)}
+.ck.ckpantry{background:#FFFBEA;border-color:#D4A017}
+.ckbox{width:24px;min-width:24px;height:24px;border-radius:7px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;margin-top:1px}
+.tg{background:var(--g);border-color:var(--g);color:#fff}
+.tb{background:var(--b);border-color:var(--b);color:#fff}
+.tp{background:var(--p);border-color:var(--p);color:#fff}
+.tpantry{background:#D4A017;border-color:#D4A017;color:#fff}
+.ck-lbl{flex:1}
+.ck-text{font-weight:700;font-size:14px;line-height:1.3}
+.ck-note{font-size:11px;color:var(--muted);margin-top:2px}
+.ck.ckg .ck-text{text-decoration:line-through;color:var(--g)}
+.ck.ckb .ck-text{text-decoration:line-through;color:var(--b)}
+.ck.ckp .ck-text{text-decoration:line-through;color:var(--p)}
+.ck-del{color:var(--muted);font-size:20px;padding:0 4px;line-height:1;cursor:pointer;flex-shrink:0}
+.stabs{display:flex;background:#fff;border-bottom:1px solid var(--border);overflow-x:auto;padding:0 14px}
+.stab{padding:11px 14px;border:none;background:none;cursor:pointer;font-family:inherit;
+  font-weight:800;font-size:13px;color:#9BA0AE;border-bottom:3px solid transparent;
+  white-space:nowrap;display:flex;align-items:center;gap:6px}
+.stab.on{color:var(--g);border-bottom-color:var(--g)}
+.stab.onb{color:var(--b);border-bottom-color:var(--b)}
+.stab.onp{color:var(--p);border-bottom-color:var(--p)}
+.stab.ony{color:#B8860B;border-bottom-color:#D4A017}
+.badge{border-radius:10px;padding:1px 7px;font-size:11px;font-weight:800}
+.tgl-btn{flex:1;padding:11px 12px;border-radius:13px;border:1.5px solid var(--border);
+  background:#fff;cursor:pointer;text-align:left;font-family:inherit}
+.tgl-btn.on{border:2.5px solid var(--g);background:var(--gl)}
+.tgl-lbl{font-weight:900;font-size:13px;color:var(--text)}
+.tgl-btn.on .tgl-lbl{color:var(--g)}
+.tgl-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.day-card{background:#fff;border-radius:14px;border:1.5px solid var(--border);
+  overflow:hidden;margin-bottom:10px}
+.day-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;color:#fff}
+.day-name{font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+.day-date{font-size:11px;opacity:.85;margin-top:1px}
+.day-body{padding:12px 14px}
+.day-dinner{font-weight:800;font-size:15px;margin-bottom:8px;line-height:1.3}
+.day-acts{display:flex;gap:7px;flex-wrap:wrap}
+.act-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:none;
+  border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit}
+.act-btn:active{filter:brightness(.88)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;
+  align-items:flex-end;justify-content:center;overflow:hidden}
+.ov.open{display:flex}
+.ov.center{align-items:center;padding:16px}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-height:92vh;
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ov.center .sheet{border-radius:18px;max-height:88vh}
+.mhdr{display:flex;justify-content:space-between;align-items:flex-start;padding:15px 18px;
+  color:#fff;position:sticky;top:0;z-index:1;border-radius:inherit}
+.mhdr-title{font-weight:900;font-size:17px}
+.mhdr-sub{font-size:10px;opacity:.75;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:4px}
+.mcls{width:32px;height:32px;background:rgba(255,255,255,.2);border:none;color:#fff;
+  border-radius:8px;font-size:20px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0}
+.mbody{padding:16px 18px}
+.ing-row{display:flex;align-items:flex-start;gap:9px;padding:7px 11px;
+  background:var(--gl);border-radius:9px;margin-bottom:5px;font-size:13px;font-weight:600}
+.ing-dot{color:var(--g);font-size:15px;flex-shrink:0;line-height:1.3}
+.step-row{display:flex;gap:10px;padding:9px 12px;background:var(--al);
+  border-radius:10px;border:1px solid #F0D5C0;margin-bottom:6px}
+.step-n{width:26px;min-width:26px;height:26px;background:var(--a);color:#fff;
+  border-radius:7px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;flex-shrink:0}
+.step-txt{font-size:13px;font-weight:600;line-height:1.5;padding-top:2px}
+.di{background:#fff;border-radius:13px;border:1.5px solid var(--border);
+  padding:12px 14px;margin-bottom:8px}
+.di-name{font-weight:900;font-size:15px;margin-bottom:5px}
+.di-shop{font-size:11px;color:var(--muted);line-height:1.6;margin-top:7px}
+.di-acts{display:flex;gap:7px;flex-shrink:0}
+.pick-row{padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);
+  margin-bottom:6px;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.pick-row.sel{background:var(--gl);border:2px solid var(--g)}
+.pick-row:active{background:#F5F1EC}
+.pick-name{font-weight:800;font-size:14px}
+.pick-shop{font-size:11px;color:var(--muted);margin-top:2px}
+#pdf-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;display:none}
+#pdf-overlay.open{display:block}
+.pdf-toolbar{display:flex;justify-content:space-between;align-items:center;
+  padding:0 0 12px;gap:10px;flex-wrap:wrap}
+.pdf-page{background:#fff;border-radius:6px;padding:20px;max-width:700px;margin:0 auto}
+.pdf-title{font-size:21px;font-weight:900;color:var(--gd)}
+.pdf-week{font-size:15px;font-weight:700;color:var(--muted);margin-top:3px}
+.pdf-th{text-align:left;padding:7px 9px;background:var(--gl);
+  font-weight:900;font-size:11px;color:var(--g);border-bottom:2px solid var(--g)}
+.pdf-td{padding:8px 9px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px}
+.pdf-sec{background:var(--bl);border-left:4px solid var(--b);padding:6px 11px;
+  margin:14px 0 8px;font-weight:900;font-size:11px;color:var(--b);
+  text-transform:uppercase;letter-spacing:.06em}
+@media print{
+  #hdr,#nav,#content,.pdf-toolbar{display:none!important}
+  #pdf-overlay{position:static!important;background:none!important;padding:0!important;display:block!important}
+  .pdf-page{box-shadow:none!important;border-radius:0!important;padding:0!important;max-width:none!important}
+  @page{margin:10mm 12mm;size:A4 portrait}
+}
+.sec-title{font-size:11px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--muted);margin-bottom:10px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state .ei{font-size:44px;margin-bottom:12px}
+.empty-state .et{font-weight:700;font-size:15px;margin-bottom:5px}
+.summary-row{display:flex;gap:8px;margin-bottom:4px;font-size:13px}
+.sr-day{font-weight:800;color:var(--muted);font-size:11px;min-width:30px;padding-top:1px}
+.glance-box{background:var(--bg);border-radius:10px;padding:10px 12px;margin:0 14px 14px}
+.info-box{background:var(--gl);border-radius:12px;padding:12px 14px;
+  border:1px solid rgba(63,122,82,.2);margin:0 14px 14px}
+.info-box .ib-title{font-weight:900;color:var(--g);font-size:13px;margin-bottom:8px}
+.info-box .ib-row{font-size:13px;color:var(--gd);line-height:1.9}
+.sfield{background:#fff;border-radius:12px;border:1px solid var(--border);
+  padding:12px 14px;margin-bottom:10px}
+.plan-strip{background:var(--bg);border-radius:10px;padding:10px 12px}
+.pantry-tag{background:#FFF8DC;color:#8B6914;border:1px solid #D4A017;border-radius:6px;
+  padding:1px 7px;font-size:10px;font-weight:800;white-space:nowrap}
+.need-tag{background:var(--dangerl);color:var(--danger);border-radius:6px;
+  padding:1px 7px;font-size:10px;font-weight:800;white-space:nowrap}
+.sync-indicator{font-size:11px;color:var(--muted);padding:6px 14px;
+  display:flex;align-items:center;gap:5px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-icon">🍽️</div>
+    <div>
+      <div class="hdr-title">Anthony's Weekly Dinner Planner</div>
+      <div class="hdr-sub">NDIS Supported Living</div>
+    </div>
+  </div>
+  <div id="sync-tag">☁️ <span id="sync-status">Offline</span></div>
+</header>
+
+<main id="content">
+  <div id="tab-planner"  class="pane"></div>
+  <div id="tab-shopping" class="pane"></div>
+  <div id="tab-pantry"   class="pane"></div>
+  <div id="tab-menus"    class="pane"></div>
+  <div id="tab-locked"   class="pane"></div>
+  <div id="tab-session"  class="pane"></div>
+</main>
+
+<nav id="nav">
+  <button class="nb" data-t="planner"  onclick="setTab('planner')"><span class="ni">📅</span>Planner</button>
+  <button class="nb" data-t="shopping" onclick="setTab('shopping')"><span class="ni">🛒</span>Shopping</button>
+  <button class="nb" data-t="pantry"   onclick="setTab('pantry')"><span class="ni">🥫</span>Pantry</button>
+  <button class="nb" data-t="menus"    onclick="setTab('menus')"><span class="ni">🍽️</span>Menus</button>
+  <button class="nb" data-t="session"  onclick="setTab('session')"><span class="ni">📋</span>Session</button>
+</nav>
+
+<!-- Modals -->
+<div id="ov-recipe" class="ov" onclick="ovClick(event,'ov-recipe')">
+  <div class="sheet"><div id="recipe-inner"></div></div>
+</div>
+<div id="ov-picker" class="ov" onclick="ovClick(event,'ov-picker')">
+  <div class="sheet"><div id="picker-inner"></div></div>
+</div>
+<div id="ov-add" class="ov center" onclick="ovClick(event,'ov-add')">
+  <div class="sheet"><div id="add-inner"></div></div>
+</div>
+<div id="ov-additem" class="ov center" onclick="ovClick(event,'ov-additem')">
+  <div class="sheet"><div id="additem-inner"></div></div>
+</div>
+<div id="ov-addpantry" class="ov center" onclick="ovClick(event,'ov-addpantry')">
+  <div class="sheet"><div id="addpantry-inner"></div></div>
+</div>
+
+<div id="pdf-overlay">
+  <div class="pdf-toolbar no-print">
+    <div style="color:#fff;font-weight:800;font-size:13px">PDF Preview — tap Print then Save as PDF</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn bd" onclick="window.print()">🖨️ Print / Save PDF</button>
+      <button class="btn" style="background:rgba(255,255,255,.15);color:#fff" onclick="closePDF()">✕ Close</button>
+    </div>
+  </div>
+  <div class="pdf-page" id="pdf-page"></div>
+</div>
+
+<script>
+// ─── SUPABASE CONFIG ───────────────────────────────────────────────────────
+// 1. Go to https://supabase.com and create a free account
+// 2. Create a new project
+// 3. Go to Project Settings → API and copy your URL and anon key below
+// 4. Go to SQL Editor and run the setup SQL in setup.sql
+const SUPABASE_URL = "https://nmwbelggwxqzpiidszok.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5td2JlbGdnd3hxenBpaWRzem9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTI5NzUsImV4cCI6MjA5NTcyODk3NX0._RFK9vncoVUvFhl-UETFia5FPxGhFcxNFORnKTg242g";
+const PROFILE_ID   = "anthony"; // unique ID for this participant
+
+let supabase = null;
+let syncEnabled = false;
+
+async function initSupabase(){
+  if(SUPABASE_URL === "YOUR_SUPABASE_URL") return;
+  try {
+    // Load Supabase SDK dynamically
+    await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js");
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    syncEnabled = true;
+    setSyncStatus("✅ Synced");
+    await loadFromCloud();
+  } catch(e){
+    setSyncStatus("⚠️ Offline");
+  }
+}
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src=src; s.onload=res; s.onerror=rej;
+    document.head.appendChild(s);
+  });
+}
+function setSyncStatus(txt){ document.getElementById("sync-status").textContent=txt; }
+
+async function saveToCloud(){
+  if(!syncEnabled) return;
+  try {
+    const payload = {
+      id: PROFILE_ID,
+      plan: S.plan,
+      session: S.session,
+      food_checked: S.foodChecked,
+      cleaning: S.cleaning,
+      other: S.other,
+      manual_food: S.manualFood,
+      locked_weeks: S.lockedWeeks,
+      pantry: S.pantry,
+      updated_at: new Date().toISOString(),
+    };
+    await supabase.from("planner_profiles").upsert(payload);
+    setSyncStatus("✅ Synced");
+  } catch(e){ setSyncStatus("⚠️ Sync error"); }
+}
+
+async function loadFromCloud(){
+  if(!syncEnabled) return;
+  try {
+    const {data} = await supabase.from("planner_profiles").select("*").eq("id",PROFILE_ID).single();
+    if(data){
+      if(data.plan)         S.plan         = data.plan;
+      if(data.session)      S.session      = {...S.session, ...data.session};
+      if(data.food_checked) S.foodChecked  = data.food_checked;
+      if(data.cleaning)     S.cleaning     = data.cleaning;
+      if(data.other)        S.other        = data.other;
+      if(data.manual_food)  S.manualFood   = data.manual_food;
+      if(data.locked_weeks) S.lockedWeeks  = data.locked_weeks;
+      if(data.pantry)       S.pantry       = data.pantry;
+    }
+  } catch(e){ /* use local state */ }
+}
+
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+// Simplified recipes — no spice, no complex condiments, basic steps only
+const DINNERS = [
+  {id:"d01",name:"Spaghetti Bolognese",
+   ing:["Beef mince (300g)","Spaghetti (200g)","Pasta sauce jar","Onion (1)","Oil"],
+   prep:"1. Fry diced onion in oil for 3 min.\n2. Add mince, break up and cook through (6–8 min).\n3. Pour in pasta sauce, stir and simmer 10 min.\n4. Cook spaghetti in boiling water per packet. Drain.\n5. Serve spaghetti topped with the sauce.",
+   shop:["Beef mince","Spaghetti","Pasta sauce (jar)","Onion","Oil"]},
+
+  {id:"d02",name:"Roast Chicken & Vegetables",
+   ing:["Chicken pieces (4)","Potatoes (2)","Carrots (2)","Frozen peas (1 cup)","Oil","Salt"],
+   prep:"1. Preheat oven to 200°C.\n2. Place chicken on lined tray, drizzle with oil, sprinkle salt.\n3. Roast 35–40 min until golden.\n4. Boil or steam potatoes and carrots until soft.\n5. Microwave peas 2 min.\n6. Serve chicken with vegetables.",
+   shop:["Chicken pieces","Potatoes","Carrots","Frozen peas","Oil"]},
+
+  {id:"d03",name:"Fish and Chips",
+   ing:["Fish fillets (2)","Frozen chips (200g)","Oil spray","Tomato sauce"],
+   prep:"1. Preheat oven to 200°C.\n2. Spread chips on tray, spray with oil. Bake 25 min, flip halfway.\n3. Place fish on separate tray, spray with oil.\n4. Bake fish 15 min until it flakes easily.\n5. Serve with tomato sauce.",
+   shop:["Fish fillets","Frozen chips","Tomato sauce"]},
+
+  {id:"d04",name:"Chicken Schnitzel & Salad",
+   ing:["Chicken breast (1)","Breadcrumbs (½ cup)","Egg (1)","Plain flour (2 tbsp)","Oil","Mixed salad bag"],
+   prep:"1. Flatten chicken breast a little with a rolling pin.\n2. Coat chicken: flour → beaten egg → breadcrumbs.\n3. Fry in oil on medium heat 4 min each side until golden.\n4. Serve with salad from the bag.",
+   shop:["Chicken breast","Breadcrumbs","Eggs","Mixed salad bag","Oil","Plain flour"]},
+
+  {id:"d05",name:"Beef & Vegetable Casserole",
+   ing:["Diced beef (400g)","Potatoes (2)","Carrots (2)","Onion (1)","Beef stock (500ml)","Frozen peas","Bread rolls"],
+   prep:"1. Brown beef in a large pot.\n2. Add diced onion, potato and carrot. Stir.\n3. Pour in beef stock. Cover and simmer on low heat 1.5 hours.\n4. Add peas in the last 10 min.\n5. Serve with bread rolls.",
+   shop:["Diced beef","Potatoes","Carrots","Onion","Beef stock","Frozen peas","Bread rolls"]},
+
+  {id:"d06",name:"Fried Rice with Egg",
+   ing:["Cooked rice (2 cups)","Eggs (2)","Frozen peas and corn (½ cup)","Soy sauce (2 tbsp)","Oil"],
+   prep:"1. Heat oil in a pan on high.\n2. Add rice and stir for 2 min.\n3. Push rice to side, crack in eggs and scramble. Mix through rice.\n4. Add peas and corn, stir 2 min.\n5. Add soy sauce and stir. Serve.",
+   shop:["Rice","Eggs","Frozen peas and corn","Soy sauce","Oil"]},
+
+  {id:"d07",name:"Pumpkin Soup",
+   ing:["Butternut pumpkin (half)","Vegetable stock (500ml)","Onion (1)","Butter (1 tbsp)","Bread rolls"],
+   prep:"1. Peel and dice pumpkin. Dice onion.\n2. Melt butter in a pot, fry onion 3 min.\n3. Add pumpkin and stock. Boil then cover and simmer 20 min.\n4. Blend smooth with a stick blender.\n5. Serve with bread rolls.",
+   shop:["Butternut pumpkin","Vegetable stock","Onion","Butter","Bread rolls"]},
+
+  {id:"d08",name:"Fish Fillet & Steamed Vegetables",
+   ing:["Fish fillets (2)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Butter (1 tbsp)"],
+   prep:"1. Preheat oven to 190°C. Place fish on lined tray, season with salt.\n2. Bake 15–18 min until fish flakes.\n3. Steam broccoli and carrots 8–10 min.\n4. Microwave peas 2 min.\n5. Serve fish with vegetables and a small knob of butter on the veg.",
+   shop:["Fish fillets","Broccoli","Carrots","Frozen peas","Butter"]},
+
+  {id:"d09",name:"Chicken & Homemade Chips",
+   ing:["Chicken pieces (3–4)","Potatoes (3)","Oil","Salt","Tomato sauce"],
+   prep:"1. Preheat oven to 210°C.\n2. Cut potatoes into chips. Toss with oil and salt.\n3. Bake chips 35–40 min, flip halfway.\n4. Place chicken on another tray, drizzle oil, sprinkle salt.\n5. Bake chicken alongside chips until golden and cooked through.\n6. Serve with tomato sauce.",
+   shop:["Chicken pieces","Potatoes","Oil","Tomato sauce"]},
+
+  {id:"d10",name:"Tuna Pasta Bake",
+   ing:["Pasta (250g)","Canned tuna (2 cans)","Cream of mushroom soup (1 can)","Frozen peas and corn (½ cup)","Cheese (1 cup grated)"],
+   prep:"1. Preheat oven to 180°C. Cook pasta until nearly done. Drain.\n2. Mix tuna (drained), soup, peas and corn, and pasta in a bowl.\n3. Spoon into a greased dish. Top with grated cheese.\n4. Bake 20–25 min until golden on top.",
+   shop:["Pasta","Canned tuna (2 cans)","Cream of mushroom soup","Frozen peas and corn","Tasty cheese"]},
+
+  {id:"d11",name:"Mac & Cheese with Bacon",
+   ing:["Macaroni pasta (200g)","Bacon (3–4 rashers)","Butter (2 tbsp)","Plain flour (2 tbsp)","Milk (1½ cups)","Cheese (1 cup grated)"],
+   prep:"1. Cook macaroni per packet. Drain.\n2. Fry bacon until cooked. Set aside.\n3. Melt butter in saucepan, add flour and stir 1 min. Slowly stir in milk until thick.\n4. Remove from heat, stir in cheese.\n5. Mix pasta, sauce and bacon. Serve.",
+   shop:["Macaroni pasta","Bacon rashers","Butter","Plain flour","Milk","Tasty cheese"]},
+
+  {id:"d12",name:"Calamari, Rice & Vegetables",
+   ing:["Frozen crumbed calamari rings (250g)","White rice (1 cup)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Tomato sauce"],
+   prep:"1. Cook rice: 1 cup rice + 2 cups water. Boil, cover, simmer 12 min.\n2. Preheat oven to 200°C. Bake calamari on lined tray 12–15 min.\n3. Steam broccoli and carrots 8 min. Microwave peas 2 min.\n4. Plate rice, calamari and vegetables with tomato sauce.",
+   shop:["Frozen calamari rings","White rice","Broccoli","Carrots","Frozen peas","Tomato sauce"]},
+
+  {id:"d13",name:"Beef Mince Stir Fry",
+   ing:["Beef mince (300g)","Frozen stir-fry vegetables (bag)","Soy sauce (2 tbsp)","Oil","Rice or noodles"],
+   prep:"1. Cook rice or noodles per packet.\n2. Heat oil in a pan on high.\n3. Add mince, break up and cook through 5–6 min.\n4. Add vegetables, stir 3 min.\n5. Add soy sauce and stir. Serve over rice or noodles.",
+   shop:["Beef mince","Frozen stir-fry vegetables","Soy sauce","Oil","Rice or noodles"]},
+
+  {id:"d14",name:"Sausages & Vegetables",
+   ing:["Sausages (4–5)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Butter","Tomato sauce"],
+   prep:"1. Cook sausages in a non-stick pan on medium, turning every few minutes for 12–15 min.\n2. Steam broccoli and carrots 8–10 min. Microwave peas 2 min.\n3. Toss vegetables with a small knob of butter.\n4. Serve sausages with vegetables and tomato sauce.",
+   shop:["Sausages","Broccoli","Carrots","Frozen peas","Butter","Tomato sauce"]},
+
+  {id:"d15",name:"Bacon & Egg Quiche",
+   ing:["Shortcrust pastry shell (1)","Eggs (4)","Milk (½ cup)","Bacon (3 rashers)","Cheese (½ cup grated)","Onion (½)"],
+   prep:"1. Preheat oven to 180°C.\n2. Fry diced bacon and onion 3–4 min. Let cool slightly.\n3. Whisk eggs and milk with a little salt and pepper.\n4. Put bacon and onion in pastry shell. Pour egg mix over. Top with cheese.\n5. Bake 30–35 min until set and golden. Rest 5 min before cutting.",
+   shop:["Shortcrust pastry shell","Eggs","Milk","Bacon rashers","Tasty cheese","Onion"]},
+
+  {id:"d16",name:"Chicken Stir Fry",
+   ing:["Chicken breast or thigh (300g)","Frozen stir-fry vegetables (bag)","Soy sauce (2 tbsp)","Oil","Rice or noodles"],
+   prep:"1. Cook rice or noodles per packet.\n2. Slice chicken into thin strips.\n3. Heat oil in pan on high. Fry chicken 5 min until cooked. Set aside.\n4. Add vegetables to pan, stir 3 min.\n5. Return chicken, add soy sauce, stir 1 min. Serve.",
+   shop:["Chicken breast or thigh","Frozen stir-fry vegetables","Soy sauce","Oil","Rice or noodles"]},
+
+  {id:"d17",name:"Impossible Quiche (No Pastry)",
+   ing:["Eggs (4)","Milk (1½ cups)","Self-raising flour (½ cup)","Bacon (3–4 rashers)","Onion (1)","Cheese (1 cup grated)","Butter (1 tbsp)"],
+   prep:"1. Preheat oven to 180°C. Grease a large pie dish with butter.\n2. Fry diced bacon and onion 3–4 min. Cool slightly.\n3. Whisk eggs, milk and melted butter. Add flour and whisk smooth.\n4. Stir in bacon, onion and half the cheese. Pour into dish. Top with rest of cheese.\n5. Bake 35–40 min until golden and set. No pastry needed.",
+   shop:["Eggs","Milk","Self-raising flour","Bacon rashers","Onion","Tasty cheese","Butter"]},
+
+  {id:"d18",name:"Savoury Mince on Toast or Rice",
+   ing:["Beef mince (400g)","Onion (1)","Carrots (2)","Frozen peas (½ cup)","Beef stock (1 cup)","Tomato paste (2 tbsp)","Oil","Bread or rice"],
+   prep:"1. Fry diced onion in oil 3 min.\n2. Add mince, break up and brown.\n3. Add diced carrot, stock and tomato paste. Stir.\n4. Simmer on low 20 min until thick. Add peas last 5 min.\n5. Serve on toast or over rice.",
+   shop:["Beef mince","Onion","Carrots","Frozen peas","Beef stock","Tomato paste","Oil","Bread or rice"]},
+
+  {id:"d19",name:"Beef Mince & Gravy on Mash",
+   ing:["Beef mince (400g)","Gravy sachet (1)","Onion (1)","Frozen peas and carrots (1 cup)","Potatoes (3)","Butter","Milk"],
+   prep:"1. Boil potatoes, drain and mash with butter and milk.\n2. Fry diced onion, add mince and brown.\n3. Mix gravy sachet with water per packet instructions. Pour over mince.\n4. Simmer 10 min. Add frozen vegetables last 5 min.\n5. Serve mince and gravy over mashed potato.",
+   shop:["Beef mince","Gravy sachet","Onion","Frozen peas and carrots","Potatoes","Butter","Milk"]},
+
+  {id:"d20",name:"Shepherd's Pie",
+   ing:["Beef or lamb mince (400g)","Onion (1)","Carrots (2)","Frozen peas (½ cup)","Beef stock (½ cup)","Tomato paste (2 tbsp)","Potatoes (4)","Butter (2 tbsp)","Milk (¼ cup)","Cheese (½ cup grated)"],
+   prep:"1. Preheat oven to 190°C.\n2. Boil potatoes, drain and mash with butter and milk.\n3. Fry onion, add mince and brown. Add diced carrot, stock and tomato paste. Simmer 15 min. Add peas.\n4. Spoon mince into a baking dish. Top with mashed potato.\n5. Sprinkle cheese over top. Bake 20–25 min until golden.",
+   shop:["Beef or lamb mince","Onion","Carrots","Frozen peas","Beef stock","Tomato paste","Potatoes","Butter","Milk","Tasty cheese"]},
+
+  {id:"d21",name:"Sausages, Mash & Gravy",
+   ing:["Sausages (4–5)","Potatoes (3)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Gravy sachet (1)","Butter","Milk"],
+   prep:"1. Boil potatoes, drain and mash with butter and milk.\n2. Cook sausages in a pan on medium, turning regularly 12–15 min.\n3. Steam broccoli and carrots 8–10 min. Microwave peas 2 min.\n4. Make gravy per sachet instructions.\n5. Plate mash, sausages and vegetables. Pour gravy over.",
+   shop:["Sausages","Potatoes","Broccoli","Carrots","Frozen peas","Gravy sachet","Butter","Milk"]},
+
+  {id:"d22",name:"Chicken Casserole & Rice",
+   ing:["Chicken thighs (500g)","Onion (1)","Carrots (2)","Potatoes (2)","Frozen peas (½ cup)","Chicken stock (500ml)","Tomato paste (2 tbsp)","White rice (1½ cups)","Oil"],
+   prep:"1. Brown chicken in oil in a large pot. Remove.\n2. Fry diced onion 3 min.\n3. Return chicken. Add carrot, potato, stock and tomato paste. Cover and simmer on low 40 min.\n4. Add peas last 10 min.\n5. Cook rice per packet. Serve casserole over rice.",
+   shop:["Chicken thighs","Onion","Carrots","Potatoes","Frozen peas","Chicken stock","Tomato paste","White rice","Oil"]},
+
+  {id:"d23",name:"Hamburgers & Steamed Veg",
+   ing:["Beef burger patties (2)","Hamburger buns (2)","Lettuce","Tomato (1)","Sliced cheese (2 pieces)","Tomato sauce","Broccoli","Carrots","Frozen peas"],
+   prep:"1. Steam or microwave broccoli, carrots and peas until tender.\n2. Cook patties in a pan on medium-high 4–5 min each side. Add cheese last 1 min.\n3. Lightly toast buns.\n4. Build burger: bun, lettuce, patty with cheese, tomato, tomato sauce, top bun.\n5. Serve with steamed vegetables.",
+   shop:["Beef burger patties","Hamburger buns","Lettuce","Tomatoes","Sliced cheese","Tomato sauce","Broccoli","Carrots","Frozen peas"]},
+
+  {id:"d24",name:"Tuna Rice & Vegetables",
+   ing:["Canned tuna (2 cans)","White rice (1½ cups)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Butter (1 tbsp)"],
+   prep:"1. Cook rice per packet.\n2. Steam broccoli and carrots 8 min. Microwave peas 2 min.\n3. Drain tuna and heat gently in a small saucepan.\n4. Serve rice with tuna and vegetables. Add a knob of butter to the veg.",
+   shop:["Canned tuna (2 cans)","White rice","Broccoli","Carrots","Frozen peas","Butter"]},
+
+  {id:"d25",name:"T-Bone Steak & Mash",
+   ing:["T-bone steak (1)","Potatoes (3)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Butter","Milk","Oil","Gravy sachet"],
+   prep:"1. Boil potatoes, drain and mash with butter and milk.\n2. Steam broccoli, carrots and peas.\n3. Pat steak dry, rub with a little oil and salt.\n4. Cook in a hot pan 3–4 min each side. Rest 3 min before serving.\n5. Make gravy per sachet. Plate steak with mash, veg and gravy.",
+   shop:["T-bone steak","Potatoes","Broccoli","Carrots","Frozen peas","Butter","Milk","Oil","Gravy sachet"]},
+
+  {id:"d26",name:"Pasta Bake with Cheese",
+   ing:["Pasta (250g)","Pasta sauce jar","Beef mince (300g)","Onion (1)","Cheese (1 cup grated)","Oil"],
+   prep:"1. Preheat oven to 180°C. Cook pasta until nearly done. Drain.\n2. Fry diced onion in oil, add mince and brown. Add pasta sauce, simmer 5 min.\n3. Mix pasta and sauce in baking dish. Top with grated cheese.\n4. Bake 20 min until cheese is golden.",
+   shop:["Pasta","Pasta sauce (jar)","Beef mince","Onion","Tasty cheese","Oil"]},
+
+  {id:"d27",name:"Sausage, Veg & Rice",
+   ing:["Sausages (4)","White rice (1½ cups)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Tomato sauce"],
+   prep:"1. Cook rice per packet.\n2. Cook sausages in a pan on medium 12–15 min, turning regularly.\n3. Steam broccoli and carrots 8 min. Microwave peas 2 min.\n4. Slice sausages. Serve over rice with vegetables and tomato sauce.",
+   shop:["Sausages","White rice","Broccoli","Carrots","Frozen peas","Tomato sauce"]},
+];
+
+const DEF_CLEANING = [
+  {id:"c01",name:"Dishwashing liquid"},{id:"c02",name:"Dishwasher tablets"},
+  {id:"c03",name:"Laundry detergent"},{id:"c04",name:"Surface spray"},
+  {id:"c05",name:"Toilet cleaner"},{id:"c06",name:"Garbage bags"},
+  {id:"c07",name:"Paper towel"},{id:"c08",name:"Sponges"},
+  {id:"c09",name:"Floor cleaner"},{id:"c10",name:"Bathroom spray"},
+];
+
+const DEF_OTHER = [
+  {id:"o01",name:"Toothpaste"},{id:"o02",name:"Shampoo"},
+  {id:"o03",name:"Body wash"},{id:"o04",name:"Deodorant"},
+  {id:"o05",name:"Tissues"},{id:"o06",name:"Toilet paper"},
+  {id:"o07",name:"Toothbrush"},
+];
+
+// ─── HELPERS ───────────────────────────────────────────────────────────────
+function toLocalISO(d){
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),dd=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${dd}`;
+}
+function todayISO(){ return toLocalISO(new Date()); }
+function getMonday(){
+  const d=new Date(), day=d.getDay(), diff=day===0?1:(1-day);
+  d.setDate(d.getDate()+diff); return toLocalISO(d);
+}
+function getSunday(ms){
+  const d=new Date(ms+"T00:00:00"); d.setDate(d.getDate()+6); return d;
+}
+function snapToMonday(s){
+  if(!s) return getMonday();
+  const d=new Date(s+"T00:00:00"), day=d.getDay(), diff=day===0?-6:(1-day);
+  d.setDate(d.getDate()+diff); return toLocalISO(d);
+}
+function fmtDate(s){
+  if(!s) return "";
+  try{ return new Date(s+"T00:00:00").toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric"}); }
+  catch{ return s; }
+}
+function fmtLong(d){
+  return d.toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"});
+}
+function genPlan(dinners){
+  const sh=[...dinners].sort(()=>Math.random()-.5), plan={};
+  DAYS.forEach((day,i)=>{ plan[day]=sh[i%sh.length].id; });
+  return plan;
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+// ─── PANTRY LOGIC ──────────────────────────────────────────────────────────
+// Returns shopping items with pantry status tagged
+function getShopFood(sd){
+  const days = sd==="sunday"
+    ? ["Monday","Tuesday","Wednesday"]
+    : sd==="wednesday"
+      ? ["Thursday","Friday","Saturday","Sunday"]
+      : DAYS;
+  const map={};
+  days.forEach(day=>{
+    const did=S.plan[day]; if(!did) return;
+    const d=S.dinners.find(x=>x.id===did);
+    d?.shop?.forEach(item=>{
+      if(!map[item]) map[item]={name:item,meals:[],manual:false};
+      if(!map[item].meals.includes(d.name)) map[item].meals.push(d.name);
+    });
+  });
+  S.manualFood.forEach(item=>{ if(!map[item]) map[item]={name:item,meals:[],manual:true}; });
+
+  // Tag each item with pantry status
+  return Object.values(map).map(item=>{
+    item.inPantry = isPantryItem(item.name);
+    return item;
+  }).sort((a,b)=>{
+    // Pantry items go to bottom (already have them)
+    if(a.inPantry && !b.inPantry) return 1;
+    if(!a.inPantry && b.inPantry) return -1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function isPantryItem(name){
+  const n = name.toLowerCase();
+  return S.pantry.some(p => {
+    if(!p.name) return false;
+    const pn = p.name.toLowerCase();
+    // Match if pantry item name is contained in or contains the shopping item
+    return n.includes(pn) || pn.includes(n.split(" (")[0].trim());
+  });
+}
+
+function getPantryMatchName(name){
+  const n = name.toLowerCase();
+  const match = S.pantry.find(p=>{
+    if(!p.name) return false;
+    const pn = p.name.toLowerCase();
+    return n.includes(pn) || pn.includes(n.split(" (")[0].trim());
+  });
+  return match ? match.name : null;
+}
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+const S = {
+  tab:"session",
+  session:{worker:"",date:todayISO(),filledBy:"",weekStart:getMonday()},
+  dinners:[...DINNERS],
+  plan:{},
+  shopDay:"sunday",
+  shopTab:"food",
+  foodChecked:{},
+  cleaning:DEF_CLEANING.map(x=>({...x,checked:false})),
+  other:DEF_OTHER.map(x=>({...x,checked:false})),
+  manualFood:[],
+  lockedWeeks:[],
+  search:"",
+  pickerDay:null,
+  pantry:[], // [{id, name, notes}]
+  pantrySearch:"",
+};
+S.plan = genPlan(S.dinners);
+
+// ─── SAVE STATE ────────────────────────────────────────────────────────────
+function persistLocal(){
+  try {
+    localStorage.setItem("anthony_planner", JSON.stringify({
+      plan:S.plan, session:S.session, foodChecked:S.foodChecked,
+      cleaning:S.cleaning, other:S.other, manualFood:S.manualFood,
+      lockedWeeks:S.lockedWeeks, pantry:S.pantry, shopDay:S.shopDay,
+    }));
+  } catch(e){}
+}
+function loadLocal(){
+  try {
+    const raw = localStorage.getItem("anthony_planner");
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    if(d.plan)         S.plan         = d.plan;
+    if(d.session)      S.session      = {...S.session,...d.session};
+    if(d.foodChecked)  S.foodChecked  = d.foodChecked;
+    if(d.cleaning)     S.cleaning     = d.cleaning;
+    if(d.other)        S.other        = d.other;
+    if(d.manualFood)   S.manualFood   = d.manualFood;
+    if(d.lockedWeeks)  S.lockedWeeks  = d.lockedWeeks;
+    if(d.pantry)       S.pantry       = d.pantry;
+    if(d.shopDay)      S.shopDay      = d.shopDay;
+  } catch(e){}
+}
+
+function saveState(){
+  persistLocal();
+  saveToCloud();
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────────────
+function render(){
+  document.querySelectorAll(".nb").forEach(b=>{
+    b.classList.toggle("on", b.dataset.t===S.tab);
+  });
+  document.querySelectorAll(".pane").forEach(p=>p.classList.remove("on"));
+  const pane = document.getElementById("tab-"+S.tab);
+  if(pane){ pane.classList.add("on"); pane.innerHTML = renderTab(S.tab); }
+}
+
+function renderTab(t){
+  if(t==="planner")  return renderPlanner();
+  if(t==="shopping") return renderShopping();
+  if(t==="pantry")   return renderPantry();
+  if(t==="menus")    return renderMenus();
+  if(t==="locked")   return renderLocked();
+  if(t==="session")  return renderSession();
+  return "";
+}
+
+// ─── PLANNER ───────────────────────────────────────────────────────────────
+function renderPlanner(){
+  const sunday = getSunday(S.session.weekStart);
+  const weekLabel = fmtLong(sunday);
+  let cards="";
+  DAYS.forEach((day,i)=>{
+    const d=new Date(S.session.weekStart+"T00:00:00");
+    d.setDate(d.getDate()+i);
+    const dateStr=`${d.getDate()} ${d.toLocaleString("en-AU",{month:"short"})}`;
+    const did=S.plan[day];
+    const dinner=did?S.dinners.find(x=>x.id===did):null;
+    const isWknd=i>=5;
+    const hdrBg=isWknd?"var(--a)":"var(--gd)";
+    let body="";
+    if(dinner){
+      // Count pantry items for this meal
+      const pantryCount = (dinner.shop||[]).filter(s=>isPantryItem(s)).length;
+      const pantryNote = pantryCount>0
+        ? `<span class="pantry-tag">🥫 ${pantryCount} in pantry</span>`:"";
+      body=`<div class="day-dinner">${esc(dinner.name)} ${pantryNote}</div>
+        <div class="day-acts">
+          <button class="act-btn" style="background:var(--gl);color:var(--g)" onclick="openRecipe('${dinner.id}')">📖 Recipe</button>
+          <button class="act-btn" style="background:#F5F1EC;color:var(--muted)" onclick="openPicker('${esc(day)}')">✏️ Change</button>
+        </div>`;
+    } else {
+      body=`<button class="act-btn" style="background:var(--gl);color:var(--g);width:100%;justify-content:center;padding:12px" onclick="openPicker('${esc(day)}')">+ Add dinner</button>`;
+    }
+    cards+=`<div class="day-card">
+      <div class="day-hdr" style="background:${hdrBg}">
+        <div><div class="day-name">${day.slice(0,3)}</div><div class="day-date">${dateStr}</div></div>
+        ${dinner?`<button onclick="clearDay('${esc(day)}')" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:7px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:700">✕ Clear</button>`:""}
+      </div>
+      <div class="day-body">${body}</div>
+    </div>`;
+  });
+
+  let glance="";
+  DAYS.forEach(day=>{
+    const did=S.plan[day];
+    const dinner=did?S.dinners.find(x=>x.id===did):null;
+    glance+=`<div class="summary-row">
+      <span class="sr-day">${day.slice(0,3)}</span>
+      <span style="font-weight:700;color:${dinner?"var(--text)":"var(--muted)"};font-style:${dinner?"normal":"italic"};font-size:13px">${dinner?esc(dinner.name):"— not set —"}</span>
+    </div>`;
+  });
+
+  return `
+    <div style="background:#fff;padding:12px 14px;border-bottom:1px solid var(--border)">
+      <div style="font-weight:900;font-size:18px;color:var(--gd);letter-spacing:-.3px">Week ending ${esc(weekLabel)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
+        <label style="font-size:12px;font-weight:700;color:var(--muted)">📅</label>
+        <input type="date" value="${S.session.weekStart}" onchange="changeWeek(this.value)"
+          style="font-family:inherit;font-size:14px;font-weight:700;border:1.5px solid var(--border);
+          border-radius:8px;padding:5px 9px;background:#fff;outline:none;color:var(--text);cursor:pointer">
+        <span style="font-size:12px;color:var(--muted);font-weight:600">${S.session.worker?"👤 "+esc(S.session.worker):"⚠️ Set worker in Session tab"}</span>
+      </div>
+    </div>
+    ${S.pantry.length>0?`<div style="background:#FFF8DC;border-bottom:1px solid #D4A017;padding:8px 14px;font-size:12px;color:#7A5C00;font-weight:700">🥫 ${S.pantry.length} pantry/fridge items tracked — shopping list will skip what you already have</div>`:""}
+    <div style="padding:12px 14px 4px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ba" onclick="shufflePlan()">🔀 Shuffle</button>
+      <button class="btn bb" onclick="setTab('shopping')">🛒 Shopping</button>
+      <button class="btn bd" onclick="showPDF()">📄 PDF</button>
+      <button class="btn" style="background:#7B5EA7;color:#fff" onclick="lockWeek()">🔒 Lock Week</button>
+    </div>
+    <div style="padding:0 14px 14px">${cards}</div>
+    <div style="padding:0 14px 4px"><div class="sec-title">This week at a glance</div></div>
+    <div class="glance-box">${glance}</div>`;
+}
+
+// ─── SHOPPING ──────────────────────────────────────────────────────────────
+function renderShopping(){
+  const days=S.shopDay==="sunday"
+    ?["Monday","Tuesday","Wednesday"]
+    :S.shopDay==="wednesday"
+      ?["Thursday","Friday","Saturday","Sunday"]
+      :DAYS;
+  const foodItems=getShopFood(S.shopDay);
+  const needToBuy = foodItems.filter(i=>!i.inPantry && !S.foodChecked[i.name]);
+  const inPantry  = foodItems.filter(i=>i.inPantry);
+  const cleanNeed=S.cleaning.filter(i=>!i.checked).length;
+  const otherNeed=S.other.filter(i=>!i.checked).length;
+
+  let planStrip="";
+  days.forEach(day=>{
+    const did=S.plan[day];
+    const dinner=did?S.dinners.find(x=>x.id===did):null;
+    planStrip+=`<div class="summary-row">
+      <span class="sr-day">${day.slice(0,3)}</span>
+      <span style="font-weight:700;color:${dinner?"var(--text)":"var(--muted)"};font-style:${dinner?"normal":"italic"};font-size:12px">${dinner?esc(dinner.name):"not set"}</span>
+    </div>`;
+  });
+
+  let content="";
+  if(S.shopTab==="food"){
+    if(foodItems.length===0){
+      content=`<div class="empty-state"><div class="ei">🥗</div><div class="et">No meals planned for these days</div><div>Go to Planner and assign dinners first.</div></div>`;
+    } else {
+      content=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--muted);font-weight:600">${needToBuy.length} to buy · ${inPantry.length} already have</div>
+        <button class="btn ba bsm" onclick="openAddItem('food')">+ Add Item</button>
+      </div>`;
+
+      // Items to buy
+      if(needToBuy.length>0){
+        content+=`<div style="font-size:11px;font-weight:900;color:var(--danger);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🛒 Need to buy (${needToBuy.length})</div>`;
+        needToBuy.forEach(item=>{
+          const chk=!!S.foodChecked[item.name];
+          content+=`<div class="ck${chk?" ckg":""}" onclick="toggleFood('${esc(item.name)}')">
+            <div class="ckbox${chk?" tg":""}">${chk?"✓":""}</div>
+            <div class="ck-lbl">
+              <div class="ck-text">${esc(item.name)}</div>
+              <div class="ck-note">For: ${esc(item.meals.join(", "))}</div>
+            </div>
+            ${item.manual?`<span class="ck-del" onclick="event.stopPropagation();removeManualFood('${esc(item.name)}')">×</span>`:""}
+          </div>`;
+        });
+      }
+
+      // Already in pantry
+      if(inPantry.length>0){
+        content+=`<div style="font-size:11px;font-weight:900;color:#8B6914;text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px">🥫 Already in pantry/fridge (${inPantry.length})</div>`;
+        inPantry.forEach(item=>{
+          const pantryName = getPantryMatchName(item.name);
+          content+=`<div class="ck ckpantry">
+            <div class="ckbox tpantry">✓</div>
+            <div class="ck-lbl">
+              <div class="ck-text" style="color:#8B6914">${esc(item.name)}</div>
+              <div class="ck-note">In pantry as: ${esc(pantryName||item.name)} · For: ${esc(item.meals.join(", "))}</div>
+            </div>
+          </div>`;
+        });
+      }
+
+      // Already checked off (bought)
+      const checked = foodItems.filter(i=>!i.inPantry && S.foodChecked[i.name]);
+      if(checked.length>0){
+        content+=`<div style="font-size:11px;font-weight:900;color:var(--g);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px">✅ Bought (${checked.length})</div>`;
+        checked.forEach(item=>{
+          content+=`<div class="ck ckg" onclick="toggleFood('${esc(item.name)}')">
+            <div class="ckbox tg">✓</div>
+            <div class="ck-lbl">
+              <div class="ck-text">${esc(item.name)}</div>
+              <div class="ck-note">For: ${esc(item.meals.join(", "))}</div>
+            </div>
+          </div>`;
+        });
+      }
+    }
+  } else if(S.shopTab==="cleaning"){
+    content=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--muted);font-weight:600">${S.cleaning.filter(i=>!i.checked).length} needed</div>
+      <button class="btn bb bsm" onclick="openAddItem('cleaning')">+ Add Item</button>
+    </div>`;
+    S.cleaning.forEach(item=>{
+      content+=`<div class="ck${item.checked?" ckb":""}" onclick="toggleClean('${item.id}')">
+        <div class="ckbox${item.checked?" tb":""}">${item.checked?"✓":""}</div>
+        <div class="ck-lbl"><div class="ck-text">${esc(item.name)}</div></div>
+        <span class="ck-del" onclick="event.stopPropagation();removeClean('${item.id}')">×</span>
+      </div>`;
+    });
+  } else {
+    content=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--muted);font-weight:600">${S.other.filter(i=>!i.checked).length} needed</div>
+      <button class="btn bsm" style="background:var(--p);color:#fff" onclick="openAddItem('other')">+ Add Item</button>
+    </div>`;
+    S.other.forEach(item=>{
+      content+=`<div class="ck${item.checked?" ckp":""}" onclick="toggleOther('${item.id}')">
+        <div class="ckbox${item.checked?" tp":""}">${item.checked?"✓":""}</div>
+        <div class="ck-lbl"><div class="ck-text">${esc(item.name)}</div></div>
+        <span class="ck-del" onclick="event.stopPropagation();removeOther('${item.id}')">×</span>
+      </div>`;
+    });
+  }
+
+  return `
+    <div style="background:#fff;padding:12px 14px;border-bottom:1px solid var(--border)">
+      <div style="font-weight:900;font-size:16px;margin-bottom:9px">🛒 Shopping List</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:600">Which shopping trip are you doing?</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="tgl-btn${S.shopDay==="sunday"?" on":""}" onclick="setShopDay('sunday')" style="flex:1;min-width:130px">
+          <div class="tgl-lbl">☀️ Sunday Shop</div><div class="tgl-sub">Ingredients for Mon – Wed</div>
+        </button>
+        <button class="tgl-btn${S.shopDay==="wednesday"?" on":""}" onclick="setShopDay('wednesday')" style="flex:1;min-width:130px">
+          <div class="tgl-lbl">🌤️ Wednesday Shop</div><div class="tgl-sub">Ingredients for Thu – Sun</div>
+        </button>
+        <button class="tgl-btn${S.shopDay==="full"?" on":""}" onclick="setShopDay('full')" style="flex:1 1 100%">
+          <div class="tgl-lbl">📋 Full Week Shopping</div><div class="tgl-sub">All ingredients for Mon – Sun in one list</div>
+        </button>
+      </div>
+    </div>
+    <div style="padding:10px 14px 6px;background:#fff;border-bottom:1px solid var(--border)">
+      <div class="sec-title">Planned dinners for this shop:</div>
+      <div class="plan-strip">${planStrip}</div>
+    </div>
+    <div class="stabs">
+      <button class="stab${S.shopTab==="food"?" on":""}" onclick="setShopTab('food')">
+        🥗 Food <span class="badge" style="background:${S.shopTab==="food"?"var(--g)":"#E8E5E0"};color:${S.shopTab==="food"?"#fff":"var(--muted)"}">${needToBuy.length}</span>
+      </button>
+      <button class="stab${S.shopTab==="cleaning"?" onb":""}" onclick="setShopTab('cleaning')">
+        🧹 Cleaning <span class="badge" style="background:${S.shopTab==="cleaning"?"var(--b)":"#E8E5E0"};color:${S.shopTab==="cleaning"?"#fff":"var(--muted)"}">${cleanNeed}</span>
+      </button>
+      <button class="stab${S.shopTab==="other"?" onp":""}" onclick="setShopTab('other')">
+        📦 Other <span class="badge" style="background:${S.shopTab==="other"?"var(--p)":"#E8E5E0"};color:${S.shopTab==="other"?"#fff":"var(--muted)"}">${otherNeed}</span>
+      </button>
+    </div>
+    <div style="padding:14px">${content}</div>`;
+}
+
+// ─── PANTRY ────────────────────────────────────────────────────────────────
+function renderPantry(){
+  const q = S.pantrySearch.toLowerCase();
+  const list = q ? S.pantry.filter(p=>p.name.toLowerCase().includes(q)) : S.pantry;
+
+  let items="";
+  list.forEach(p=>{
+    items+=`<div class="ck ckpantry" style="cursor:default">
+      <div class="ckbox tpantry">✓</div>
+      <div class="ck-lbl">
+        <div class="ck-text" style="color:#8B6914">${esc(p.name)}</div>
+        ${p.notes?`<div class="ck-note">${esc(p.notes)}</div>`:""}
+      </div>
+      <span class="ck-del" onclick="removePantry('${p.id}')">×</span>
+    </div>`;
+  });
+  if(!items && S.pantry.length===0){
+    items=`<div class="empty-state"><div class="ei">🥫</div>
+      <div class="et">No pantry items yet</div>
+      <div>Add what Anthony already has at home — these will be ticked off automatically in the shopping list.</div>
+    </div>`;
+  } else if(!items){
+    items=`<div class="empty-state"><div class="ei">🔍</div><div class="et">No results</div></div>`;
+  }
+
+  return `
+    <div style="padding:14px 14px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <div>
+        <div style="font-weight:900;font-size:20px;margin-bottom:3px">🥫 Pantry & Fridge</div>
+        <div style="font-size:13px;color:var(--muted)">${S.pantry.length} item${S.pantry.length!==1?"s":""} tracked · Shopping list skips these</div>
+      </div>
+      <button class="btn bg" onclick="openAddPantry()">+ Add Item</button>
+    </div>
+    <div style="background:#FFF8DC;border:1px solid #D4A017;border-radius:10px;margin:0 14px 14px;padding:10px 13px;font-size:12px;color:#7A5C00;font-weight:600">
+      💡 Add items Anthony already has at home. When these ingredients appear on the shopping list, they'll be moved to the "Already have" section so you don't buy duplicates.
+    </div>
+    <div style="padding:0 14px 12px">
+      <input type="search" placeholder="🔍 Search pantry..."
+        value="${esc(S.pantrySearch)}" oninput="setPantrySearch(this.value)"
+        style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;
+        font-size:16px;font-weight:600;font-family:inherit;background:#fff;outline:none;color:var(--text)">
+    </div>
+    <div style="padding:0 14px 20px">${items}</div>`;
+}
+
+// ─── MENUS ─────────────────────────────────────────────────────────────────
+function renderMenus(){
+  const q=S.search.toLowerCase();
+  const list=q?S.dinners.filter(d=>d.name.toLowerCase().includes(q)):S.dinners;
+  let items="";
+  list.forEach(d=>{
+    const shopPrev=d.shop?d.shop.slice(0,4).join(" · ")+(d.shop.length>4?` +${d.shop.length-4} more`:""):"";
+    items+=`<div class="di">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div class="di-name">${esc(d.name)}</div>
+        <div class="di-acts">
+          <button class="act-btn" style="background:var(--gl);color:var(--g)" onclick="openRecipe('${d.id}')">📖 Recipe</button>
+          <button class="act-btn" style="background:var(--dangerl);color:var(--danger)" onclick="deleteDinner('${d.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="di-shop">🛒 ${esc(shopPrev)}</div>
+    </div>`;
+  });
+  if(!items) items=`<div class="empty-state"><div class="ei">🍽️</div><div class="et">No results for "${esc(S.search)}"</div></div>`;
+
+  return `
+    <div style="padding:14px 14px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <div>
+        <div style="font-weight:900;font-size:20px;margin-bottom:3px">🍽️ Dinner Library</div>
+        <div style="font-size:13px;color:var(--muted)">${S.dinners.length} dinners available</div>
+      </div>
+      <button class="btn bg" onclick="openAddDinner()">+ Add Dinner</button>
+    </div>
+    <div style="padding:0 14px 12px">
+      <input type="search" placeholder="🔍 Search dinners..."
+        value="${esc(S.search)}" oninput="setSearch(this.value)"
+        style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;
+        font-size:16px;font-weight:600;font-family:inherit;background:#fff;outline:none;
+        color:var(--text);display:block">
+    </div>
+    <div style="padding:0 14px 20px">${items}</div>`;
+}
+
+// ─── SESSION ───────────────────────────────────────────────────────────────
+function renderSession(){
+  const ready=S.session.worker&&S.session.date;
+  const supaConfigured = SUPABASE_URL !== "YOUR_SUPABASE_URL";
+  return `
+    <div style="padding:16px 14px">
+      <div style="font-weight:900;font-size:20px;margin-bottom:4px">📋 Session Information</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:16px">Fill in at the start of each support session.</div>
+      ${["worker","date","filledBy","weekStart"].map((k,i)=>{
+        const labels=["Support Worker Name","Session Date","Form Completed By","Week Starting (Monday)"];
+        const phs=["e.g. Sarah Johnson","","e.g. Sarah Johnson",""];
+        const types=["text","date","text","date"];
+        return `<div class="sfield">
+          <label class="flabel">${labels[i]}</label>
+          <input type="${types[i]}" value="${esc(S.session[k])}" placeholder="${phs[i]}"
+            onchange="setSessionField('${k}',this.value)"
+            style="width:100%;border:none;outline:none;font-size:16px;font-weight:700;
+            color:var(--text);background:transparent;font-family:inherit">
+        </div>`;
+      }).join("")}
+      ${ready?`
+        <div class="info-box" style="margin-top:6px;margin-left:0;margin-right:0">
+          <div class="ib-title">✅ Session Ready</div>
+          <div class="ib-row">
+            <div>👤 <strong>Worker:</strong> ${esc(S.session.worker)}</div>
+            ${S.session.filledBy?`<div>📝 <strong>Completed by:</strong> ${esc(S.session.filledBy)}</div>`:""}
+            <div>📅 <strong>Session date:</strong> ${fmtDate(S.session.date)}</div>
+            <div>🗓️ <strong>Week ending:</strong> ${fmtLong(getSunday(S.session.weekStart))}</div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn bg" onclick="setTab('planner')">Go to Planner →</button>
+            <button class="btn ba" onclick="setTab('shopping')">Go to Shopping →</button>
+          </div>
+        </div>`:""}
+      <div style="margin-top:20px;padding:14px;background:${supaConfigured?"var(--gl)":"var(--dangerl)"};border-radius:12px;border:1px solid ${supaConfigured?"rgba(63,122,82,.2)":"rgba(201,64,64,.2)"}">
+        <div style="font-weight:900;font-size:13px;color:${supaConfigured?"var(--g)":"var(--danger)"};margin-bottom:6px">
+          ☁️ Cloud Sync ${supaConfigured?"Configured":"Not Set Up"}
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">
+          ${supaConfigured
+            ? "Data is syncing to Supabase. Plans are saved across devices."
+            : `To enable cloud sync and access on any device:<br>
+               1. Go to <strong>supabase.com</strong> → create free account<br>
+               2. Create a new project<br>
+               3. Run the SQL from <strong>setup.sql</strong> in the SQL Editor<br>
+               4. Paste your URL + anon key into the top of <strong>index.html</strong>`}
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:14px;background:var(--bl);border-radius:12px;border:1px solid rgba(72,114,176,.2)">
+        <div style="font-weight:900;font-size:13px;color:var(--b);margin-bottom:6px">📱 Install as App on Android</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.7">
+          1. Open this page in <strong>Chrome</strong> on Anthony's Android phone<br>
+          2. Tap the <strong>3-dot menu</strong> (top right)<br>
+          3. Tap <strong>"Add to Home Screen"</strong><br>
+          4. It installs like an app — works offline too
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── LOCKED ────────────────────────────────────────────────────────────────
+function renderLocked(){
+  if(S.lockedWeeks.length===0) return `
+    <div style="padding:16px 14px">
+      <div style="font-weight:900;font-size:20px;margin-bottom:4px">🔒 Locked Menus</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:20px">Saved weekly dinner plans.</div>
+    </div>
+    <div class="empty-state">
+      <div class="ei">📋</div>
+      <div class="et">No locked weeks yet</div>
+      <div style="font-size:13px;margin-bottom:16px">Go to Planner, plan your week, then tap <strong>🔒 Lock Week</strong>.</div>
+      <button class="btn bg" onclick="setTab('planner')">Go to Planner →</button>
+    </div>`;
+
+  let cards="";
+  S.lockedWeeks.forEach(w=>{
+    let rows="";
+    DAYS.forEach((day,i)=>{
+      const d=new Date(w.weekStart+"T00:00:00"); d.setDate(d.getDate()+i);
+      const did=w.plan[day];
+      const dinner=did?S.dinners.find(x=>x.id===did):null;
+      const isWknd=i>=5;
+      rows+=`<div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);align-items:center">
+        <div style="min-width:68px">
+          <div style="font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:${isWknd?"var(--a)":"var(--gd)"}">${day.slice(0,3)}</div>
+          <div style="font-size:10px;color:var(--muted)">${d.getDate()} ${d.toLocaleString("en-AU",{month:"short"})}</div>
+        </div>
+        <div style="flex:1;font-weight:700;font-size:13px;color:${dinner?"var(--text)":"var(--muted)"};font-style:${dinner?"normal":"italic"}">
+          ${dinner?esc(dinner.name):"— not planned —"}
+        </div>
+        ${dinner?`<button onclick="openRecipe('${dinner.id}')" style="background:var(--gl);color:var(--g);border:none;border-radius:7px;padding:4px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;flex-shrink:0">📖</button>`:""}
+      </div>`;
+    });
+    const mealCount=DAYS.filter(d=>w.plan[d]).length;
+    cards+=`<div style="background:#fff;border-radius:14px;border:1.5px solid var(--border);
+      margin:0 14px 14px;overflow:hidden">
+      <div style="background:var(--gd);color:#fff;padding:11px 14px;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-weight:900;font-size:16px">Week ending ${esc(w.label)}</div>
+          <div style="font-size:11px;opacity:.75;margin-top:3px">${mealCount}/7 meals${w.worker?" · 👤 "+esc(w.worker):""}</div>
+          <div style="font-size:10px;opacity:.6;margin-top:1px">Locked ${esc(w.lockedAt)}</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button onclick="loadLockedWeek('${w.id}')"
+            style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;
+            padding:6px 11px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">↩ Load</button>
+          <button onclick="deleteLockedWeek('${w.id}')"
+            style="background:rgba(255,100,80,.35);border:none;color:#fff;border-radius:8px;
+            padding:6px 10px;font-size:14px;cursor:pointer">🗑️</button>
+        </div>
+      </div>
+      <div style="padding:4px 14px 8px">${rows}</div>
+    </div>`;
+  });
+
+  return `
+    <div style="padding:14px 14px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <div>
+        <div style="font-weight:900;font-size:20px;margin-bottom:3px">🔒 Locked Menus</div>
+        <div style="font-size:13px;color:var(--muted)">${S.lockedWeeks.length} saved week${S.lockedWeeks.length!==1?"s":""}</div>
+      </div>
+      <button class="btn bg" onclick="setTab('planner')">+ Plan Week</button>
+    </div>
+    ${cards}`;
+}
+
+// ─── HANDLERS ──────────────────────────────────────────────────────────────
+function setTab(t){ S.tab=t; render(); window.scrollTo(0,0); }
+function setShopDay(d){ S.shopDay=d; saveState(); renderInPlace(); }
+function setShopTab(t){ S.shopTab=t; renderInPlace(); }
+function setSearch(v){ S.search=v; renderInPlace(); }
+function setPantrySearch(v){ S.pantrySearch=v; renderInPlace(); }
+function setSessionField(k,v){
+  S.session[k]=v;
+  if(k==="weekStart") S.session.weekStart=snapToMonday(v);
+  saveState(); renderInPlace();
+}
+function changeWeek(v){ S.session.weekStart=snapToMonday(v); saveState(); renderInPlace(); }
+function shufflePlan(){ S.plan=genPlan(S.dinners); saveState(); renderInPlace(); }
+function clearDay(day){ delete S.plan[day]; saveState(); renderInPlace(); }
+
+function toggleFood(name){ S.foodChecked[name]=!S.foodChecked[name]; saveState(); renderInPlace(); }
+function toggleClean(id){ const i=S.cleaning.find(x=>x.id===id); if(i){ i.checked=!i.checked; saveState(); } renderInPlace(); }
+function toggleOther(id){ const i=S.other.find(x=>x.id===id); if(i){ i.checked=!i.checked; saveState(); } renderInPlace(); }
+function removeManualFood(name){ S.manualFood=S.manualFood.filter(x=>x!==name); saveState(); renderInPlace(); }
+function removeClean(id){ S.cleaning=S.cleaning.filter(x=>x.id!==id); saveState(); renderInPlace(); }
+function removeOther(id){ S.other=S.other.filter(x=>x.id!==id); saveState(); renderInPlace(); }
+function deleteDinner(id){ S.dinners=S.dinners.filter(x=>x.id!==id); saveState(); renderInPlace(); }
+function removePantry(id){ S.pantry=S.pantry.filter(x=>x.id!==id); saveState(); renderInPlace(); }
+
+function lockWeek(){
+  const sunday=getSunday(S.session.weekStart);
+  const label=fmtLong(sunday);
+  if(S.lockedWeeks.find(w=>w.weekStart===S.session.weekStart)){
+    if(!confirm(`A plan for "${label}" is already locked. Replace it?`)) return;
+    S.lockedWeeks=S.lockedWeeks.filter(w=>w.weekStart!==S.session.weekStart);
+  }
+  const dinnerCount=DAYS.filter(d=>S.plan[d]).length;
+  if(dinnerCount===0){ alert("No dinners planned yet — add some meals first."); return; }
+  S.lockedWeeks.unshift({
+    id:"lk"+Date.now(),
+    weekStart:S.session.weekStart,
+    label,
+    plan:{...S.plan},
+    worker:S.session.worker||"",
+    lockedAt:new Date().toLocaleString("en-AU",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}),
+  });
+  saveState();
+  alert(`✅ Week ending ${label} has been locked and saved.`);
+  renderInPlace();
+}
+
+function loadLockedWeek(id){
+  const w=S.lockedWeeks.find(x=>x.id===id); if(!w) return;
+  if(!confirm(`Load the plan for "${w.label}"? This replaces the current week.`)) return;
+  S.session.weekStart=w.weekStart;
+  S.plan={...w.plan};
+  saveState(); setTab("planner");
+}
+
+function deleteLockedWeek(id){
+  const w=S.lockedWeeks.find(x=>x.id===id); if(!w) return;
+  if(!confirm(`Remove the locked plan for "${w.label}"?`)) return;
+  S.lockedWeeks=S.lockedWeeks.filter(x=>x.id!==id);
+  saveState(); renderInPlace();
+}
+
+// ─── MODALS ────────────────────────────────────────────────────────────────
+function ovClick(e,id){ if(e.target===e.currentTarget) closeOv(id); }
+function openOv(id){ document.getElementById(id).classList.add("open"); document.body.style.overflow="hidden"; }
+function closeOv(id){ document.getElementById(id).classList.remove("open"); document.body.style.overflow=""; }
+
+function openRecipe(id){
+  const d=S.dinners.find(x=>x.id===id); if(!d) return;
+  const ings=d.ing.map(i=>`<div class="ing-row"><span class="ing-dot">•</span><span>${esc(i)}</span></div>`).join("");
+  const steps=d.prep.split("\n").filter(Boolean).map((s,i)=>{
+    const n=s.match(/^\d+/)?s.match(/^\d+/)[0]:i+1;
+    return `<div class="step-row"><div class="step-n">${n}</div><div class="step-txt">${esc(s.replace(/^\d+\.\s*/,""))}</div></div>`;
+  }).join("");
+  document.getElementById("recipe-inner").innerHTML=`
+    <div class="mhdr" style="background:var(--gd)">
+      <div><div class="mhdr-sub">🍽️ Dinner Recipe</div><div class="mhdr-title">${esc(d.name)}</div></div>
+      <button class="mcls" onclick="closeOv('ov-recipe')">×</button>
+    </div>
+    <div class="mbody">
+      <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--g);margin-bottom:9px">🛒 You'll Need</div>
+      ${ings}
+      <div style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--a);margin:16px 0 9px">👨‍🍳 How to Cook</div>
+      ${steps}
+      <div style="height:20px"></div>
+    </div>`;
+  openOv("ov-recipe");
+}
+
+function openPicker(day){
+  S.pickerDay=day; renderPicker(); openOv("ov-picker");
+}
+function renderPicker(){
+  const day=S.pickerDay;
+  const rows=S.dinners.map(d=>{
+    const sel=S.plan[day]===d.id;
+    const pantryCount=(d.shop||[]).filter(s=>isPantryItem(s)).length;
+    return `<div class="pick-row${sel?" sel":""}" onclick="selectMeal('${d.id}')">
+      <div>
+        <div class="pick-name" style="color:${sel?"var(--g)":"var(--text)"}">${esc(d.name)}</div>
+        <div class="pick-shop">🛒 ${esc(d.shop?d.shop.slice(0,3).join(", ")+(d.shop.length>3?"...":""):"")}${pantryCount?` · <span style="color:#8B6914;font-weight:800">🥫 ${pantryCount} in pantry</span>`:""}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="event.stopPropagation();openRecipe('${d.id}')" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);font-family:inherit;font-weight:700">📖</button>
+        ${sel?`<span style="color:var(--g);font-size:20px;font-weight:900">✓</span>`:""}
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("picker-inner").innerHTML=`
+    <div class="mhdr" style="background:var(--g)">
+      <div><div class="mhdr-sub">✏️ Pick Dinner</div><div class="mhdr-title">${esc(day)}</div></div>
+      <button class="mcls" onclick="closeOv('ov-picker')">×</button>
+    </div>
+    <div style="padding:12px 16px 0">
+      ${S.plan[day]?`<button onclick="clearDayClose('${esc(day)}')" style="width:100%;padding:11px;border-radius:10px;border:1.5px dashed rgba(201,64,64,.5);background:var(--dangerl);color:var(--danger);font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:10px">🗑️ Clear this day</button>`:""}
+    </div>
+    <div style="padding:0 16px 24px">${rows}</div>`;
+}
+function selectMeal(did){
+  if(!S.pickerDay) return;
+  S.plan[S.pickerDay]=did;
+  closeOv("ov-picker"); saveState(); renderInPlace();
+}
+function clearDayClose(day){ delete S.plan[day]; closeOv("ov-picker"); saveState(); renderInPlace(); }
+
+function openAddDinner(){
+  document.getElementById("add-inner").innerHTML=`
+    <div class="mhdr" style="background:var(--g)">
+      <div><div class="mhdr-title">Add New Dinner</div></div>
+      <button class="mcls" onclick="closeOv('ov-add')">×</button>
+    </div>
+    <div class="mbody" style="display:flex;flex-direction:column;gap:13px">
+      <div><label class="flabel">Dinner Name *</label>
+        <input class="finput" id="nd-name" type="text" placeholder="e.g. Lamb Chops & Veg"></div>
+      <div><label class="flabel">Ingredients (one per line)</label>
+        <textarea class="finput" id="nd-ing" placeholder="Lamb chops (2)\nPotatoes\nBroccoli"></textarea></div>
+      <div><label class="flabel">Cooking Steps (one per line)</label>
+        <textarea class="finput" id="nd-prep" placeholder="1. Preheat oven to 200°C\n2. Season lamb\n3. Bake 30 min"></textarea></div>
+      <div><label class="flabel">Shopping List Items (one per line)</label>
+        <textarea class="finput" id="nd-shop" placeholder="Lamb chops\nPotatoes\nBroccoli"></textarea></div>
+      <button class="btn bg" style="width:100%;justify-content:center;padding:13px" onclick="saveNewDinner()">✓ Save Dinner</button>
+      <div style="height:10px"></div>
+    </div>`;
+  openOv("ov-add");
+}
+function saveNewDinner(){
+  const name=document.getElementById("nd-name").value.trim();
+  if(!name){ alert("Please enter a dinner name."); return; }
+  S.dinners.push({
+    id:"u"+Date.now(), name,
+    ing:document.getElementById("nd-ing").value.split("\n").filter(Boolean),
+    prep:document.getElementById("nd-prep").value,
+    shop:document.getElementById("nd-shop").value.split("\n").filter(Boolean),
+  });
+  closeOv("ov-add"); saveState(); renderInPlace();
+}
+
+function openAddItem(type){
+  const labels={food:"🥗 Add Food Item",cleaning:"🧹 Add Cleaning Item",other:"📦 Add Other Item"};
+  const phs={food:"e.g. Oat milk",cleaning:"e.g. Glass cleaner",other:"e.g. Sunscreen"};
+  const colors={food:"var(--a)",cleaning:"var(--b)",other:"var(--p)"};
+  document.getElementById("additem-inner").innerHTML=`
+    <div class="mhdr" style="background:${colors[type]}">
+      <div><div class="mhdr-title">${labels[type]}</div></div>
+      <button class="mcls" onclick="closeOv('ov-additem')">×</button>
+    </div>
+    <div class="mbody">
+      <label class="flabel">Item name</label>
+      <input class="finput" id="ai-name" type="text" placeholder="${phs[type]}"
+        onkeydown="if(event.key==='Enter') saveNewItem('${type}')">
+      <div style="height:14px"></div>
+      <button class="btn" style="background:${colors[type]};color:#fff;width:100%;justify-content:center;padding:13px" onclick="saveNewItem('${type}')">Add to List →</button>
+      <div style="height:10px"></div>
+    </div>`;
+  openOv("ov-additem");
+  setTimeout(()=>document.getElementById("ai-name")?.focus(),200);
+}
+function saveNewItem(type){
+  const v=document.getElementById("ai-name").value.trim();
+  if(!v) return;
+  if(type==="food") S.manualFood.push(v);
+  else if(type==="cleaning") S.cleaning.push({id:"cx"+Date.now(),name:v,checked:false});
+  else if(type==="other") S.other.push({id:"ox"+Date.now(),name:v,checked:false});
+  closeOv("ov-additem"); saveState(); renderInPlace();
+}
+
+function openAddPantry(){
+  document.getElementById("addpantry-inner").innerHTML=`
+    <div class="mhdr" style="background:#8B6914">
+      <div><div class="mhdr-title">🥫 Add Pantry / Fridge Item</div></div>
+      <button class="mcls" onclick="closeOv('ov-addpantry')">×</button>
+    </div>
+    <div class="mbody">
+      <label class="flabel">Item name</label>
+      <input class="finput" id="pi-name" type="text" placeholder="e.g. Soy sauce, Rice, Eggs"
+        onkeydown="if(event.key==='Enter') saveNewPantry()">
+      <div style="height:10px"></div>
+      <label class="flabel">Notes (optional)</label>
+      <input class="finput" id="pi-notes" type="text" placeholder="e.g. Half a bag left">
+      <div style="height:14px"></div>
+      <button class="btn" style="background:#8B6914;color:#fff;width:100%;justify-content:center;padding:13px" onclick="saveNewPantry()">Add to Pantry →</button>
+      <div style="background:#FFF8DC;border-radius:10px;padding:10px 12px;margin-top:14px;font-size:12px;color:#7A5C00;font-weight:600">
+        💡 Tip: Use the base ingredient name (e.g. "Soy sauce" not "2 tbsp of soy sauce") so it matches shopping items automatically.
+      </div>
+      <div style="height:10px"></div>
+    </div>`;
+  openOv("ov-addpantry");
+  setTimeout(()=>document.getElementById("pi-name")?.focus(),200);
+}
+function saveNewPantry(){
+  const name=document.getElementById("pi-name").value.trim();
+  if(!name) return;
+  const notes=document.getElementById("pi-notes").value.trim();
+  // Don't duplicate
+  if(!S.pantry.find(p=>p.name.toLowerCase()===name.toLowerCase())){
+    S.pantry.push({id:"p"+Date.now(), name, notes});
+  }
+  closeOv("ov-addpantry"); saveState(); renderInPlace();
+}
+
+// ─── PDF ───────────────────────────────────────────────────────────────────
+function showPDF(){
+  const sunday=getSunday(S.session.weekStart);
+  const shopLabels={
+    sunday:"☀️ Sunday Shopping — Mon to Wed",
+    wednesday:"🌤️ Wednesday Shopping — Thu to Sun",
+    full:"📋 Full Week Shopping",
+  };
+  const mainItems=getShopFood(S.shopDay);
+  const sunItems=S.shopDay==="full"?getShopFood("sunday"):null;
+  const wedItems=S.shopDay==="full"?getShopFood("wednesday"):null;
+
+  const tableRows=DAYS.map((day,i)=>{
+    const d=new Date(S.session.weekStart+"T00:00:00");
+    d.setDate(d.getDate()+i);
+    const dinner=S.plan[day]?S.dinners.find(x=>x.id===S.plan[day]):null;
+    return `<tr style="border-bottom:1px solid #E3DCD4;background:${i%2===0?"#FAFAF8":"#fff"}">
+      <td class="pdf-td" style="width:100px"><div style="font-weight:900">${day}</div><div style="font-size:10px;color:#6B7280">${d.getDate()} ${d.toLocaleString("en-AU",{month:"short"})}</div></td>
+      <td class="pdf-td" style="width:180px;font-weight:800;color:${dinner?"#1E2025":"#9BA0AE"};font-style:${dinner?"normal":"italic"}">${dinner?esc(dinner.name):"— not planned —"}</td>
+      <td class="pdf-td" style="color:#6B7280;font-size:11px">${dinner?(dinner.shop||[]).join(" · "):""}</td>
+    </tr>`;
+  }).join("");
+
+  const shopList=(items,title,color)=>{
+    const needed=items.filter(item=>!item.inPantry&&!S.foodChecked[item.name]);
+    const have=items.filter(item=>item.inPantry);
+    const header=`<div style="font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:${color};margin-bottom:7px;padding-bottom:4px;border-bottom:2px solid ${color}">${title}</div>`;
+    let out=header;
+    if(!items.length) return out+`<div style="font-size:11px;color:#9BA0AE;font-style:italic">No meals planned</div>`;
+    if(needed.length) out+=needed.map(item=>`<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:4px;font-size:12px"><span>☐</span><span style="font-weight:600">${esc(item.name)}</span></div>`).join("");
+    else out+=`<div style="font-size:11px;color:#3F7A52;font-weight:700">✅ All food items in stock or pantry</div>`;
+    if(have.length) out+=`<div style="margin-top:8px;font-size:10px;color:#8B6914;font-weight:800">ALREADY HAVE (pantry):</div>`+
+      have.map(item=>`<div style="font-size:11px;color:#8B6914;margin-bottom:3px">🥫 ${esc(item.name)}</div>`).join("");
+    return out;
+  };
+
+  const supplyList=(items,title,color)=>{
+    const needed=items.filter(item=>!item.checked);
+    const header=`<div style="font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:${color};margin-bottom:7px;padding-bottom:4px;border-bottom:2px solid ${color}">${title}</div>`;
+    if(!needed.length) return header+`<div style="font-size:11px;color:#3F7A52;font-weight:700">✅ All in stock</div>`;
+    return header+needed.map(item=>`<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:4px;font-size:12px"><span>☐</span><span style="font-weight:600">${esc(item.name)}</span></div>`).join("");
+  };
+
+  document.getElementById("pdf-page").innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #3F7A52;padding-bottom:12px;margin-bottom:14px">
+      <div>
+        <div class="pdf-title">🍽️ Anthony's Weekly Meal Plan</div>
+        <div class="pdf-week">Week ending <strong style="color:#1E2025">${fmtLong(sunday)}</strong></div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#6B7280;line-height:1.9">
+        ${S.session.worker?`<div>👤 <strong>${esc(S.session.worker)}</strong></div>`:""}
+        ${S.session.date?`<div>📅 ${fmtDate(S.session.date)}</div>`:""}
+      </div>
+    </div>
+    <div class="pdf-sec">📅 Weekly Dinner Plan</div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th class="pdf-th" style="width:100px">Day</th>
+        <th class="pdf-th" style="width:180px">Dinner</th>
+        <th class="pdf-th">Key Ingredients</th>
+      </tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+    <div class="pdf-sec">🛒 Food Shopping — ${esc(shopLabels[S.shopDay])}</div>
+    ${S.shopDay==="full"
+      ?`<div style="display:flex;gap:20px"><div style="flex:1">${shopList(sunItems,"☀️ Sunday Shop","#4872B0")}</div><div style="width:1px;background:#E3DCD4;flex-shrink:0"></div><div style="flex:1">${shopList(wedItems,"🌤️ Wednesday Shop","#4872B0")}</div></div>`
+      :`<div style="padding:0 4px">${shopList(mainItems,S.shopDay==="sunday"?"☀️ Mon to Wed":"🌤️ Thu to Sun","#4872B0")}</div>`
+    }
+    <div class="pdf-sec" style="border-left-color:#7B5EA7;color:#7B5EA7;background:#F2EDF9">🧹 Cleaning &amp; Other Supplies</div>
+    <div style="display:flex;gap:20px">
+      <div style="flex:1">${supplyList(S.cleaning,"🧹 Cleaning","#4872B0")}</div>
+      <div style="width:1px;background:#E3DCD4;flex-shrink:0"></div>
+      <div style="flex:1">${supplyList(S.other,"📦 Other Items","#7B5EA7")}</div>
+    </div>
+    <div style="border-top:1px solid #E3DCD4;margin-top:18px;padding-top:7px;display:flex;justify-content:space-between;font-size:10px;color:#9BA0AE">
+      <span>Anthony's NDIS Supported Living — Weekly Meal &amp; Support Plan</span>
+      <span>Printed: ${fmtLong(new Date())}</span>
+    </div>`;
+
+  document.getElementById("pdf-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closePDF(){
+  document.getElementById("pdf-overlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+
+function renderInPlace(){
+  const pane=document.getElementById("tab-"+S.tab);
+  if(pane) pane.innerHTML=renderTab(S.tab);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+loadLocal();
+render();
+setTab("session");
+initSupabase();
+
+// Register service worker for offline / PWA support
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
