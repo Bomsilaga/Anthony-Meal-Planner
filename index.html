@@ -555,7 +555,7 @@ function getShopFood(sd){
     item.inPantry = isPantryItem(item.name);
     return item;
   }).sort((a,b)=>{
-    // Pantry items go to bottom (already have them)
+    // Pantry items go to bottom (already have them), then alphabetical within each group
     if(a.inPantry && !b.inPantry) return 1;
     if(!a.inPantry && b.inPantry) return -1;
     return a.name.localeCompare(b.name);
@@ -586,13 +586,13 @@ function getPantryMatchName(name){
 const S = {
   tab:"session",
   session:{worker:"",date:todayISO(),filledBy:"",weekStart:getMonday()},
-  dinners:[...DINNERS],
+  dinners:[...DINNERS].sort((a,b)=>a.name.localeCompare(b.name)),
   plan:{},
   shopDay:"sunday",
   shopTab:"food",
   foodChecked:{},
-  cleaning:DEF_CLEANING.map(x=>({...x,checked:false})),
-  other:DEF_OTHER.map(x=>({...x,checked:false})),
+  cleaning:DEF_CLEANING.map(x=>({...x,checked:false})).sort((a,b)=>a.name.localeCompare(b.name)),
+  other:DEF_OTHER.map(x=>({...x,checked:false})).sort((a,b)=>a.name.localeCompare(b.name)),
   manualFood:[],
   lockedWeeks:[],
   search:"",
@@ -1225,6 +1225,7 @@ function saveNewDinner(){
     prep:document.getElementById("nd-prep").value,
     shop:document.getElementById("nd-shop").value.split("\n").filter(Boolean),
   });
+  S.dinners.sort((a,b)=>a.name.localeCompare(b.name));
   closeOv("ov-add"); saveState(); renderInPlace();
 }
 
@@ -1251,9 +1252,9 @@ function openAddItem(type){
 function saveNewItem(type){
   const v=document.getElementById("ai-name").value.trim();
   if(!v) return;
-  if(type==="food") S.manualFood.push(v);
-  else if(type==="cleaning") S.cleaning.push({id:"cx"+Date.now(),name:v,checked:false});
-  else if(type==="other") S.other.push({id:"ox"+Date.now(),name:v,checked:false});
+  if(type==="food"){ S.manualFood.push(v); S.manualFood.sort((a,b)=>a.localeCompare(b)); }
+  else if(type==="cleaning"){ S.cleaning.push({id:"cx"+Date.now(),name:v,checked:false}); S.cleaning.sort((a,b)=>a.name.localeCompare(b.name)); }
+  else if(type==="other"){ S.other.push({id:"ox"+Date.now(),name:v,checked:false}); S.other.sort((a,b)=>a.name.localeCompare(b.name)); }
   closeOv("ov-additem"); saveState(); renderInPlace();
 }
 
@@ -1287,6 +1288,7 @@ function saveNewPantry(){
   // Don't duplicate
   if(!S.pantry.find(p=>p.name.toLowerCase()===name.toLowerCase())){
     S.pantry.push({id:"p"+Date.now(), name, notes});
+    S.pantry.sort((a,b)=>a.name.localeCompare(b.name));
   }
   closeOv("ov-addpantry"); saveState(); renderInPlace();
 }
