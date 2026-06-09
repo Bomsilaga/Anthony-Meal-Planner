@@ -456,6 +456,31 @@ const DINNERS = [
    ing:["Sausages (4)","White rice (1½ cups)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Tomato sauce"],
    prep:"1. Cook rice per packet.\n2. Cook sausages in a pan on medium 12–15 min, turning regularly.\n3. Steam broccoli and carrots 8 min. Microwave peas 2 min.\n4. Slice sausages. Serve over rice with vegetables and tomato sauce.",
    shop:["Sausages","White rice","Broccoli","Carrots","Frozen peas","Tomato sauce"]},
+
+  {id:"d28",name:"Chow Mein",
+   ing:["Chicken breast or beef mince (300g)","Hokkien noodles (2 packets)","Frozen stir-fry vegetables (bag)","Soy sauce (3 tbsp)","Oil","Cabbage (optional, ¼ shredded)"],
+   prep:"1. Cook noodles: pour boiling water over them in a bowl, leave 2 min, drain.\n2. Slice chicken into thin strips or use mince.\n3. Heat oil in pan on high. Cook chicken or mince through (5–6 min).\n4. Add vegetables and cabbage if using. Stir 3 min.\n5. Add noodles and soy sauce. Toss everything together 2 min on high heat. Serve.",
+   shop:["Chicken breast or beef mince","Hokkien noodles","Frozen stir-fry vegetables","Soy sauce","Oil"]},
+
+  {id:"d29",name:"Creamy Chicken Pasta",
+   ing:["Chicken breast (2, diced)","Pasta (250g)","Thickened cream (200ml)","Chicken stock (½ cup)","Onion (1)","Garlic (1 clove)","Butter (1 tbsp)","Cheese (½ cup grated)"],
+   prep:"1. Cook pasta per packet. Drain, keep a little pasta water.\n2. Fry diced onion and garlic in butter 3 min.\n3. Add diced chicken, cook through 6–7 min.\n4. Pour in cream and stock. Stir and simmer 5 min until slightly thick.\n5. Stir in cheese. Add pasta and toss. Add a splash of pasta water if too thick. Serve.",
+   shop:["Chicken breast","Pasta","Thickened cream","Chicken stock","Onion","Garlic","Butter","Tasty cheese"]},
+
+  {id:"d30",name:"Shepherd's Pie with Sweet Potato",
+   ing:["Beef or lamb mince (400g)","Sweet potatoes (3 large)","Onion (1)","Carrots (2)","Frozen peas (½ cup)","Beef stock (½ cup)","Tomato paste (2 tbsp)","Butter (2 tbsp)","Milk (¼ cup)","Cheese (½ cup grated)"],
+   prep:"1. Preheat oven to 190°C.\n2. Peel and boil sweet potatoes until soft. Drain and mash with butter and milk.\n3. Fry onion, add mince and brown. Add diced carrot, stock and tomato paste. Simmer 15 min. Add peas.\n4. Spoon mince into baking dish. Top with sweet potato mash, rough up with a fork.\n5. Sprinkle cheese on top. Bake 20–25 min until golden.",
+   shop:["Beef or lamb mince","Sweet potatoes","Onion","Carrots","Frozen peas","Beef stock","Tomato paste","Butter","Milk","Tasty cheese"]},
+
+  {id:"d31",name:"Chicken Sausage, Veg & Sweet Mash",
+   ing:["Chicken sausages (4–5)","Sweet potatoes (3 large)","Broccoli (1 cup)","Carrots (2)","Frozen peas (½ cup)","Butter (2 tbsp)","Milk (¼ cup)","Tomato sauce"],
+   prep:"1. Peel and boil sweet potatoes until soft. Drain and mash with butter and milk.\n2. Cook chicken sausages in a non-stick pan on medium, turning every few minutes for 12–15 min.\n3. Steam broccoli and carrots 8–10 min. Microwave peas 2 min.\n4. Serve sausages on sweet potato mash with vegetables and tomato sauce.",
+   shop:["Chicken sausages","Sweet potatoes","Broccoli","Carrots","Frozen peas","Butter","Milk","Tomato sauce"]},
+
+  {id:"d32",name:"Beef Stir Fry",
+   ing:["Beef stir-fry strips (300g)","Frozen stir-fry vegetables (bag)","Soy sauce (3 tbsp)","Oil","Rice or noodles"],
+   prep:"1. Cook rice or noodles per packet.\n2. Heat oil in pan on HIGH until very hot.\n3. Add beef strips in a single layer. Leave 1 min to brown, then toss 2–3 min. Remove from pan.\n4. Add vegetables to pan, stir 3–4 min.\n5. Return beef. Add soy sauce. Toss 1 min on high heat. Serve over rice or noodles.",
+   shop:["Beef stir-fry strips","Frozen stir-fry vegetables","Soy sauce","Oil","Rice or noodles"]},
 ];
 
 const DEF_CLEANING = [
@@ -692,6 +717,7 @@ function renderPlanner(){
       <button class="btn bb" onclick="setTab('shopping')">🛒 Shopping</button>
       <button class="btn bd" onclick="showPDF()">📄 PDF</button>
       <button class="btn" style="background:#7B5EA7;color:#fff" onclick="lockWeek()">🔒 Lock Week</button>
+      <button class="btn bg" onclick="openAddDinner()">➕ New Meal</button>
     </div>
     <div style="padding:0 14px 14px">${cards}</div>
     <div style="padding:0 14px 4px"><div class="sec-title">This week at a glance</div></div>
